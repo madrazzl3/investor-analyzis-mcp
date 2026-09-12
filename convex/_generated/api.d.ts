@@ -9,6 +9,7 @@
  */
 
 import type * as access from "../access.js";
+import type * as analysis_evidence from "../analysis/evidence.js";
 import type * as analysis_execute from "../analysis/execute.js";
 import type * as analysis_fake from "../analysis/fake.js";
 import type * as analysis_registry from "../analysis/registry.js";
@@ -41,6 +42,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   access: typeof access;
+  "analysis/evidence": typeof analysis_evidence;
   "analysis/execute": typeof analysis_execute;
   "analysis/fake": typeof analysis_fake;
   "analysis/registry": typeof analysis_registry;

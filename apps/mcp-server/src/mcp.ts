@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ConvexHttpClient } from 'convex/browser';
 import { makeFunctionReference } from 'convex/server';
 import { serviceInfo } from '@investor/contracts';
+import { registerDiligencePrompts } from './prompts';
 
 export type Backend = (
   kind: 'query' | 'mutation' | 'action',
@@ -28,9 +29,10 @@ export function createMcpServer(backend: Backend): McpServer {
     { name: serviceInfo.name, version: serviceInfo.version },
     {
       instructions:
-        'Investor diligence over pitch decks and transcripts. To upload a PDF or UTF-8 transcript up to 100 MB, call prepare_upload, POST raw file bytes to its uploadUrl using the exact returned headers, then call attach_document with the uploadId and returned storageId. Never put file bytes in MCP arguments or expose upload URLs in reports. If the host cannot send file bytes over HTTP, use the website; chat attachments are not automatically accessible. Use list_documents to choose inputs. A run over uploaded documents is a live Grok analysis (when the deployment enables it) and takes minutes; a run over synthetic fixtures is a labeled test and never real diligence. Reuse requestId when retrying a start. Check list_analysis_runs before starting another run, and poll get_analysis_status at a modest interval. Findings are candidate issues with a disposition (verified, unresolved, rejected): present their evidence quotes, alternative explanations, and coverage limits, and never describe them as proven misconduct.',
+        'Investor diligence over pitch decks and transcripts. To upload a PDF or UTF-8 transcript up to 100 MB, call prepare_upload, POST raw file bytes to its uploadUrl using the exact returned headers, then call attach_document with the uploadId and returned storageId. Never put file bytes in MCP arguments or expose upload URLs in reports. If the host cannot send file bytes over HTTP, use the website; chat attachments are not automatically accessible. Use list_documents to choose inputs. A run over uploaded documents is a live Grok investor council (when the deployment enables it): intake, a context brief, ten specialist risk lenses, a Devil’s Advocate, and a ranked report; it takes several minutes. A run over synthetic fixtures is a labeled test and never real diligence. Reuse requestId when retrying a start. Check list_analysis_runs before starting another run, and poll get_analysis_status at a modest interval. The live report ranks up to six candidate risks by VRSD score with evidence quotes, alternative explanations, founder questions, evidence to request, and coverage limits; each specialist assessment is a separate artifact named by its step. Synthetic test findings carry a disposition (verified, unresolved, rejected). Present findings as risks to investigate, never as proven misconduct, and never as an invest or pass recommendation.',
     },
   );
+  registerDiligencePrompts(server);
   const id = z.string().min(1).max(128);
   const pagination = {
     cursor: z.string().nullable().default(null),
@@ -138,7 +140,7 @@ export function createMcpServer(backend: Backend): McpServer {
   );
   register(
     'list_artifacts',
-    'Read saved intermediate outputs and reports; follow pagination to retrieve further results.',
+    'Read saved intermediate outputs and reports, each labeled with the step that produced it; follow pagination to retrieve further results.',
     z.object({ runId: id, ...pagination }),
     'query',
     'runs:artifacts',

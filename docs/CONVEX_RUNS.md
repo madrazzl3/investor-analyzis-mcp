@@ -2,7 +2,7 @@
 
 ## Implemented
 
-Convex runs two approved four-step workflows on the actual Workflow component: a fake-agent workflow for synthetic fixtures, and a live Grok workflow for uploaded documents (see [Grok ingestion](GROK_INGESTION.md)). The synthetic workflow was smoke-tested on the development deployment; the live workflow is tested only against a simulated provider and is off unless `LIVE_ANALYSIS_ENABLED=true`.
+Convex runs two approved workflows on the actual Workflow component: a four-step fake-agent workflow for synthetic fixtures, and the 14-step live Grok investor council for uploaded documents (see [Grok ingestion](GROK_INGESTION.md)). The synthetic workflow was smoke-tested on the development deployment; the live workflow is tested only against a simulated provider and is off unless `LIVE_ANALYSIS_ENABLED=true`.
 
 The following functions require an authenticated identity and matching organization membership:
 

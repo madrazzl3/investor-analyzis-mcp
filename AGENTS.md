@@ -21,3 +21,17 @@ Every public backend operation must enforce actor and case authorization. Never 
 ## Delivery
 
 Keep README.md and PLAN.md accurate when behavior changes. Do not claim deployment or client compatibility without verification. Skill guidance must describe available tools and preserve uncertainty and citations.
+
+<!-- convex-ai-start -->
+
+This project uses [Convex](https://convex.dev) as its backend.
+
+When working on Convex code, **always read
+`convex/_generated/ai/guidelines.md` first** for important guidelines on
+how to correctly use Convex APIs and patterns. The file contains rules that
+override what you may have learned about Convex from training data.
+
+Convex agent skills for common tasks can be installed by running
+`npx convex ai-files install`.
+
+<!-- convex-ai-end -->

@@ -1,0 +1,30 @@
+{
+  "formatVersion": 1,
+  "id": "intake-gate",
+  "version": "1.0.0",
+  "description": "Validate the submitted deck and transcripts and build the evidence-anchored case file every later council agent works from.",
+  "promptFile": "prompts/intake-gate.v1.md",
+  "modelProfile": "grok-primary@1.0.0",
+  "inputs": {
+    "documents": {
+      "schema": "source-documents@1.0.0",
+      "delivery": "attachments"
+    }
+  },
+  "outputs": {
+    "caseFile": {
+      "schema": "case-file@1.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 120000,
+    "maxOutputTokensPerCall": 16000,
+    "timeoutSeconds": 180
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}

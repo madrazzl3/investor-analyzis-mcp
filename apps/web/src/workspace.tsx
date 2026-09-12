@@ -218,9 +218,10 @@ function CaseWorkspace({
         </p>
         <div className="workspace-notice">
           Live analysis sends this case’s uploaded documents (up to 10) to Grok
-          and runs extraction, consistency checks, verification, and a report.
-          It takes several minutes and uses paid model calls. Results are
-          candidate issues for human review, not conclusions of misconduct.
+          for an investor council: intake, a context brief, ten specialist
+          lenses, a Devil’s Advocate, and a ranked risk report. It takes several
+          minutes and uses about 14 paid model calls. Results are candidate
+          risks for human review, not conclusions of misconduct.
         </div>
         <button
           className="button primary"
@@ -390,7 +391,8 @@ function RunDetails({ runId }: { runId: Id<'analysisRuns'> }) {
           className="artifact-view"
         >
           <summary>
-            {artifact.output} · {artifact.schema}
+            {artifact.stepId ?? artifact.output} · {artifact.output} ·{' '}
+            {artifact.schema}
           </summary>
           <pre>{JSON.stringify(artifact.payload, null, 2)}</pre>
           <small>

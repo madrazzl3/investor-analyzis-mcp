@@ -6,6 +6,11 @@ import type { Id } from '../_generated/dataModel';
 import { fakeOutput } from './fake';
 import { validatePayload } from './registry';
 import {
+  assertEvidenceFromInputs,
+  assertQuotesInText,
+  assertRunDocuments,
+} from './evidence';
+import {
   GrokClient,
   GrokError,
   runWithPrivateFiles,
@@ -38,6 +43,7 @@ export const step = internalAction({
       const live = context.live;
       // Blobs are read server-side from private storage; nothing is public.
       const files = [];
+      const texts = new Map<string, string>();
       for (const source of live.attachments) {
         const blob = await ctx.storage.get(source.storageId);
         if (!blob) throw new Error('Source file missing');
@@ -46,7 +52,13 @@ export const step = internalAction({
           name: source.name,
           blob: new Blob([blob], { type: source.contentType }),
         });
+        // Uploads verify text/plain is UTF-8, so its quotes can be checked.
+        if (source.contentType === 'text/plain')
+          texts.set(source.documentVersionId, await blob.text());
       }
+      const seesDocuments = Object.values(context.agent.inputs).some(
+        (p) => p.delivery === 'attachments',
+      );
       const result = await runWithPrivateFiles(
         new GrokClient(process.env.XAI_API_KEY ?? ''),
         {
@@ -70,6 +82,10 @@ export const step = internalAction({
               throw new Error('Output ports mismatch');
             for (const [port, schema] of Object.entries(live.outputSchemas))
               validatePayload(schema, value[port]);
+            assertRunDocuments(value, live.documentVersionIds);
+            assertQuotesInText(value, texts);
+            // Rechecked by publish; failing here classifies it as invalid output.
+            if (!seesDocuments) assertEvidenceFromInputs(value, context.inputs);
           },
         },
         {

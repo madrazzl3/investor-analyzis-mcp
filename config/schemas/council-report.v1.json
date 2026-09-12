@@ -1,0 +1,234 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "council-report@1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "executiveSummary",
+    "overallRiskAssessment",
+    "topFindings",
+    "blindSpots",
+    "founderQuestions",
+    "evidenceToRequest",
+    "coverage"
+  ],
+  "properties": {
+    "executiveSummary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200
+    },
+    "overallRiskAssessment": {
+      "enum": ["high", "medium", "low"]
+    },
+    "topFindings": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rank",
+          "lens",
+          "findingId",
+          "title",
+          "exploit",
+          "consequence",
+          "investmentRisk",
+          "investorImplication",
+          "vrsd",
+          "pricedIn",
+          "evidence",
+          "alternativeExplanation"
+        ],
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6
+          },
+          "lens": {
+            "enum": [
+              "market-regulatory-exposure",
+              "competitive-attack-surface",
+              "founder-team-integrity",
+              "traction-authenticity",
+              "business-model-monetisation-ethics",
+              "moat-defensibility-under-attack",
+              "financial-captable-fragility",
+              "product-tech-attack-surface",
+              "trust-safety-reputational-risk",
+              "exit-return-under-downside",
+              "devils-advocate"
+            ]
+          },
+          "findingId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "exploit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 800
+          },
+          "consequence": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "investmentRisk": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "investorImplication": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "vrsd": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["vector", "reachability", "severity", "detectability"],
+            "properties": {
+              "vector": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "reachability": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "severity": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "detectability": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              }
+            }
+          },
+          "pricedIn": {
+            "enum": ["likely", "unclear", "no"]
+          },
+          "evidence": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["documentVersionId", "quote", "page"],
+              "properties": {
+                "documentVersionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "page": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "alternativeExplanation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        }
+      }
+    },
+    "blindSpots": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gap", "whyMissed", "priority"],
+        "properties": {
+          "gap": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "whyMissed": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "priority": {
+            "enum": ["high", "medium", "low"]
+          }
+        }
+      }
+    },
+    "founderQuestions": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["question", "context", "findingIds"],
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "context": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "findingIds": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          }
+        }
+      }
+    },
+    "evidenceToRequest": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 300
+      }
+    },
+    "coverage": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1500
+    }
+  }
+}

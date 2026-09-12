@@ -79,7 +79,8 @@ export const workflowSchema = z.strictObject({
   ...base,
   inputs: registry(port),
   limits: z.strictObject({
-    maxParallelSteps: z.number().int().min(1).max(8),
+    // Below the workflow component's default action parallelism (25).
+    maxParallelSteps: z.number().int().min(1).max(12),
     maxModelCalls: z.number().int().min(1).max(100),
   }),
   steps: registry(z.strictObject({ agent: ref, inputs: registry(binding) })),

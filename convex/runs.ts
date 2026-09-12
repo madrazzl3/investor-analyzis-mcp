@@ -4,10 +4,10 @@ import {
   restart as restartWorkflow,
 } from '@convex-dev/workflow';
 import { paginationOptsValidator } from 'convex/server';
-import { mutation, query } from './_generated/server';
+import { mutation, query, type QueryCtx } from './_generated/server';
 import { components, internal } from './_generated/api';
 import { v, ConvexError } from 'convex/values';
-import type { Id } from './_generated/dataModel';
+import type { Doc, Id } from './_generated/dataModel';
 import { requireCase, requireRun } from './access';
 import {
   approvedFor,
@@ -162,9 +162,14 @@ export const getArtifact = query({
     const artifact = await ctx.db.get(args.artifactId);
     if (!artifact) throw new ConvexError('Access denied');
     await requireRun(ctx, artifact.runId);
-    return artifact;
+    return withStep(ctx, artifact);
   },
 });
+// Several council steps share an output port name, so name the producing step.
+async function withStep(ctx: QueryCtx, artifact: Doc<'artifacts'>) {
+  const stage = await ctx.db.get(artifact.agentRunId);
+  return { ...artifact, stepId: stage?.stepId ?? null };
+}
 export const artifacts = query({
   args: {
     runId: v.id('analysisRuns'),
@@ -172,10 +177,14 @@ export const artifacts = query({
   },
   handler: async (ctx, args) => {
     await requireRun(ctx, args.runId);
-    return ctx.db
+    const page = await ctx.db
       .query('artifacts')
       .withIndex('by_run', (q) => q.eq('runId', args.runId))
       .paginate(args.paginationOpts);
+    return {
+      ...page,
+      page: await Promise.all(page.page.map((a) => withStep(ctx, a))),
+    };
   },
 });
 export const cancel = mutation({

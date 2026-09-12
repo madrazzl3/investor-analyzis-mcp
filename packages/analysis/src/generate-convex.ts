@@ -1,21 +1,23 @@
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { Ajv, type AnySchema } from 'ajv';
 import standaloneCode from 'ajv/dist/standalone/index.js';
 import { loadBundle, compile, hash } from './config.js';
 
 // One approved bundle per execution mode: fake agents for synthetic fixtures,
-// Grok agents for uploaded documents. Runs snapshot the bundle they started with.
+// Grok agents for uploaded documents. Other workflow files stay validated by
+// `pnpm config:validate` but cannot run. Runs snapshot the bundle they started with.
+const approvedWorkflows = {
+  synthetic: 'workflows/diligence.v1.json',
+  live: 'workflows/investor-council.v1.json',
+};
 const modes = { 'local-fake-v1': 'synthetic', 'convex-grok-v1': 'live' };
 const approved: Record<string, unknown> = {};
 const schemas: Record<string, AnySchema> = {};
-for (const file of readdirSync('config/workflows')
-  .filter((f) => f.endsWith('.json'))
-  .sort()) {
-  const bundle = loadBundle('config', `workflows/${file}`);
+for (const [mode, file] of Object.entries(approvedWorkflows)) {
+  const bundle = loadBundle('config', file);
   const { order, dependencies } = compile(bundle);
-  const mode = modes[bundle.runnerVersion];
-  if (approved[mode])
-    throw new Error(`More than one approved ${mode} workflow`);
+  if (modes[bundle.runnerVersion] !== mode)
+    throw new Error(`${file} does not use the ${mode} runner`);
   approved[mode] = { bundle, configHash: hash(bundle), order, dependencies };
   for (const [id, schema] of Object.entries(bundle.schemas)) {
     if (schemas[id] && hash(schemas[id]) !== hash(schema))
@@ -23,8 +25,6 @@ for (const file of readdirSync('config/workflows')
     schemas[id] = schema;
   }
 }
-for (const mode of Object.values(modes))
-  if (!approved[mode]) throw new Error(`Missing approved ${mode} workflow`);
 
 const ajv = new Ajv({
   strict: true,

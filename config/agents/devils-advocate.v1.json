@@ -1,0 +1,74 @@
+{
+  "formatVersion": 1,
+  "id": "devils-advocate",
+  "version": "1.0.0",
+  "description": "Surface second-order and blind-spot risks that none of the ten specialists reported.",
+  "promptFile": "prompts/devils-advocate.v1.md",
+  "modelProfile": "grok-primary@1.0.0",
+  "inputs": {
+    "caseFile": {
+      "schema": "case-file@1.0.0",
+      "delivery": "json"
+    },
+    "brief": {
+      "schema": "cvo-brief@1.0.0",
+      "delivery": "json"
+    },
+    "market-regulatory-exposure": {
+      "schema": "lens-assessment@1.0.0",
+      "delivery": "json"
+    },
+    "competitive-attack-surface": {
+      "schema": "lens-assessment@1.0.0",
+      "delivery": "json"
+    },
+    "founder-team-integrity": {
+      "schema": "lens-assessment@1.0.0",
+      "delivery": "json"
+    },
+    "traction-authenticity": {
+      "schema": "lens-assessment@1.0.0",
+      "delivery": "json"
+    },
+    "business-model-monetisation-ethics": {
+      "schema": "lens-assessment@1.0.0",
+      "delivery": "json"
+    },
+    "moat-defensibility-under-attack": {
+      "schema": "lens-assessment@1.0.0",
+      "delivery": "json"
+    },
+    "financial-captable-fragility": {
+      "schema": "lens-assessment@1.0.0",
+      "delivery": "json"
+    },
+    "product-tech-attack-surface": {
+      "schema": "lens-assessment@1.0.0",
+      "delivery": "json"
+    },
+    "trust-safety-reputational-risk": {
+      "schema": "lens-assessment@1.0.0",
+      "delivery": "json"
+    },
+    "exit-return-under-downside": {
+      "schema": "lens-assessment@1.0.0",
+      "delivery": "json"
+    }
+  },
+  "outputs": {
+    "assessment": {
+      "schema": "lens-assessment@1.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 120000,
+    "maxOutputTokensPerCall": 12000,
+    "timeoutSeconds": 180
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}

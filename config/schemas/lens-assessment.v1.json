@@ -1,0 +1,148 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "lens-assessment@1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["abstained", "abstentionReason", "findings"],
+  "properties": {
+    "abstained": {
+      "type": "boolean"
+    },
+    "abstentionReason": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 400
+    },
+    "findings": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "exploit",
+          "consequence",
+          "investmentRisk",
+          "vrsd",
+          "pricedIn",
+          "precedentTag",
+          "source",
+          "evidence",
+          "alternativeExplanation",
+          "founderQuestion"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "exploit": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 800
+          },
+          "consequence": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "investmentRisk": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "vrsd": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["vector", "reachability", "severity", "detectability"],
+            "properties": {
+              "vector": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "reachability": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "severity": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              },
+              "detectability": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5
+              }
+            }
+          },
+          "pricedIn": {
+            "enum": ["likely", "unclear", "no"]
+          },
+          "precedentTag": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 60
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "evidence": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["documentVersionId", "quote", "page"],
+              "properties": {
+                "documentVersionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300
+                },
+                "page": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "alternativeExplanation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "founderQuestion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        }
+      }
+    }
+  }
+}

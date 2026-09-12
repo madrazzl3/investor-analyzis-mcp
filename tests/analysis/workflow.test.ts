@@ -226,6 +226,43 @@ describe('configuration loader/compiler', () => {
       'gpt-latest';
     expect(() => compile(alias)).toThrow();
   });
+  it('wires the investor council: intake, CVO, ten parallel lenses, Devil’s Advocate, synthesis', () => {
+    const council = loadBundle(
+      resolve('config'),
+      'workflows/investor-council.v1.json',
+    );
+    const { dependencies, order } = compile(council);
+    const lenses = Object.keys(dependencies).filter(
+      (id) => !['intake', 'cvo', 'devils-advocate', 'synthesis'].includes(id),
+    );
+    expect(council.runnerVersion).toBe('convex-grok-v1');
+    expect(lenses).toHaveLength(10);
+    expect(dependencies.cvo).toEqual(['intake']);
+    for (const lens of lenses)
+      expect(dependencies[lens]!.sort()).toEqual(['cvo', 'intake']);
+    expect(dependencies['devils-advocate']!.sort()).toEqual(
+      ['cvo', 'intake', ...lenses].sort(),
+    );
+    expect(dependencies.synthesis!.sort()).toEqual(
+      ['cvo', 'devils-advocate', 'intake', ...lenses].sort(),
+    );
+    expect(order.at(-1)).toBe('synthesis');
+    expect(council.workflow.limits.maxParallelSteps).toBeGreaterThanOrEqual(10);
+    // Only intake sees the documents; every later step works from its case file.
+    const attached = Object.values(council.agents)
+      .filter((agent) =>
+        Object.values(agent.inputs).some((p) => p.delivery === 'attachments'),
+      )
+      .map((agent) => agent.id);
+    expect(attached).toEqual(['intake-gate']);
+    // The CVO can delegate only to lenses that exist in this workflow.
+    const brief = council.schemas['cvo-brief@1.0.0'] as {
+      properties: { delegatedAgents: { items: { enum: string[] } } };
+    };
+    expect(brief.properties.delegatedAgents.items.enum.sort()).toEqual(
+      lenses.sort(),
+    );
+  });
 });
 
 describe('persisted local fake execution', () => {

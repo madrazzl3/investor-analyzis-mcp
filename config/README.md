@@ -2,12 +2,13 @@
 
 Run `pnpm config:validate` from the repository root. Validation is also part of `pnpm check`.
 
-There are two workflows, each with four agents (extract claims, check consistency, verify findings, write a report):
+There are three workflows. `packages/analysis/src/generate-convex.ts` names the one approved per mode; the others validate but cannot run.
 
-- `workflows/diligence.v1.json` uses the v1 agents and `local-fake@1.0.0`. It runs synthetic fixtures only and makes no model requests.
-- `workflows/diligence-live.v1.json` uses the v2 agents, v2 schemas, and `grok-primary@1.0.0` (`grok-4.6`). It runs uploaded documents through Grok in Convex when `LIVE_ANALYSIS_ENABLED=true`; see [Grok ingestion](../docs/GROK_INGESTION.md).
+- `workflows/diligence.v1.json` (approved, synthetic) uses the v1 agents (extract claims, check consistency, verify findings, write a report) and `local-fake@1.0.0`. It runs synthetic fixtures only and makes no model requests.
+- `workflows/investor-council.v1.json` (approved, live) runs uploaded documents through the investor council on `grok-primary@1.0.0` (`grok-4.6`) in Convex when `LIVE_ANALYSIS_ENABLED=true`: `intake-gate` → `chief-venture-officer` → ten specialist lenses in parallel → `devils-advocate` → `thesis-synthesiser`. Only intake receives the documents; later agents may cite only evidence they are given. See [Grok ingestion](../docs/GROK_INGESTION.md).
+- `workflows/diligence-live.v1.json` (not approved) is the earlier four-step Grok pipeline on the v2 agents and schemas.
 
-Edit prompts in `prompts/`; input/output contracts are draft-07 JSON Schema files in `schemas/`. Each workflow is snapshotted with only the agents, models, prompts, and schemas it uses, and a workflow must use a single provider (`fake` → `local-fake-v1` runner, `xai` → `convex-grok-v1` runner). xAI profiles name a concrete `grok-*` model ID and an attachment-search tool-call cap; live agents may not exceed a 180 s timeout, and attachment inputs must bind the submitted documents directly. Agent tool lists must be empty.
+Edit prompts in `prompts/`; input/output contracts are draft-07 JSON Schema files in `schemas/`. Each workflow is snapshotted with only the agents, models, prompts, and schemas it uses, and a workflow must use a single provider (`fake` → `local-fake-v1` runner, `xai` → `convex-grok-v1` runner). xAI profiles name a concrete `grok-*` model ID and an attachment-search tool-call cap; live agents may not exceed a 180 s timeout, and attachment inputs must bind the submitted documents directly. A workflow may run at most 12 steps in parallel. Agent tool lists must be empty.
 
 ## Updating the bundle
 

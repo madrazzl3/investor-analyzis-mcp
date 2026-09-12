@@ -311,6 +311,21 @@ it('keeps stateless initialization and notification handling for the three 2025 
     });
     expect(listed.status).toBe(200);
     expect((await rpc(listed)).result.tools.length).toBeGreaterThan(0);
+    for (const [method, params] of [
+      ['prompts/list', {}],
+      ['prompts/get', { name: 'review_pitch_deck' }],
+    ] as const) {
+      const response = await fetch(`${base}/mcp`, {
+        method: 'POST',
+        headers: legacyHeaders,
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+      });
+      expect(response.status).toBe(200);
+      const result = (await rpc(response)).result;
+      if (method === 'prompts/list')
+        expect(result.prompts[0].name).toBe('review_pitch_deck');
+      else expect(result.messages[0].content.text).toContain('prepare_upload');
+    }
   }
 });
 
@@ -370,4 +385,53 @@ it('exposes bounded upload preparation and action finalization without file byte
     'uploadValidation:attach',
     receipt,
   );
+});
+
+it('discovers and retrieves the review prompt without starting backend work', async () => {
+  const listing = await rpc(await send('prompts/list'));
+  expect(listing.result.prompts).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        name: 'review_pitch_deck',
+        title: 'Review a pitch deck',
+      }),
+    ]),
+  );
+  const result = await rpc(
+    await send('prompts/get', { name: 'review_pitch_deck' }),
+  );
+  expect(result.result.messages).toHaveLength(1);
+  expect(result.result.messages[0].role).toBe('user');
+  const text = result.result.messages[0].content.text;
+  for (const required of [
+    'list_workspaces',
+    'list_cases',
+    'prepare_upload',
+    'attach_document',
+    '100,000,000',
+    'list_analysis_runs',
+    'start_analysis',
+    'get_analysis_status',
+    'list_artifacts',
+    'get_artifact',
+    'untrusted evidence',
+    'alternative explanations',
+  ])
+    expect(text).toContain(required);
+  expect(backend).not.toHaveBeenCalled();
+  expect(
+    (await rpc(await send('prompts/get', { name: 'nonexistent' }))).error,
+  ).toBeDefined();
+});
+
+it('requires valid authentication and a live grant to retrieve prompts', async () => {
+  expect(
+    (await send('prompts/list', {}, { authorization: 'Bearer invalid' }))
+      .status,
+  ).toBe(401);
+  exchange.mockRejectedValue(new AuthFailure(401, 'invalid_token'));
+  expect(
+    (await send('prompts/get', { name: 'review_pitch_deck' })).status,
+  ).toBe(401);
+  expect(backend).not.toHaveBeenCalled();
 });

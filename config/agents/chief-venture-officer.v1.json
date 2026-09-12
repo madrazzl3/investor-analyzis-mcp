@@ -1,0 +1,30 @@
+{
+  "formatVersion": 1,
+  "id": "chief-venture-officer",
+  "version": "1.0.0",
+  "description": "Identify the deal’s dominant risk angle and name the three or four specialist lenses that should go deepest.",
+  "promptFile": "prompts/chief-venture-officer.v1.md",
+  "modelProfile": "grok-primary@1.0.0",
+  "inputs": {
+    "caseFile": {
+      "schema": "case-file@1.0.0",
+      "delivery": "json"
+    }
+  },
+  "outputs": {
+    "brief": {
+      "schema": "cvo-brief@1.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 60000,
+    "maxOutputTokensPerCall": 8000,
+    "timeoutSeconds": 120
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}

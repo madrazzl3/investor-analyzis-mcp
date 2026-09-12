@@ -10,6 +10,7 @@ import {
   type SnapshotBundle,
 } from './registry';
 import { providerCall } from './values';
+import { assertEvidenceFromInputs, assertRunDocuments } from './evidence';
 
 type DbCtx = Pick<MutationCtx | QueryCtx, 'db'>;
 /** Synthetic runs accept only fixtures; live runs only stored private uploads. */
@@ -216,6 +217,7 @@ export const context = internalQuery({
       ...base,
       mode,
       live: {
+        documentVersionIds: sources.map((doc) => doc._id as string),
         model: model.model,
         maxToolCalls: model.maxToolCalls,
         maxOutputTokens: agent.limits.maxOutputTokensPerCall,
@@ -248,21 +250,6 @@ export const context = internalQuery({
     };
   },
 });
-function verifySources(value: unknown, allowed: Set<string>): void {
-  if (!value || typeof value !== 'object') return;
-  if (Array.isArray(value)) {
-    value.forEach((x) => verifySources(x, allowed));
-    return;
-  }
-  for (const [key, child] of Object.entries(value)) {
-    if (
-      key === 'documentVersionId' &&
-      (typeof child !== 'string' || !allowed.has(child))
-    )
-      throw new Error('Foreign evidence reference');
-    verifySources(child, allowed);
-  }
-}
 export const publish = internalMutation({
   args: {
     attemptId: v.id('agentAttempts'),
@@ -292,15 +279,20 @@ export const publish = internalMutation({
         Object.keys(agent.outputs).sort().join('|')
     )
       throw new Error('Output ports mismatch');
-    for (const [port, contract] of Object.entries(agent.outputs)) {
-      validatePayload(contract.schema, args.outputs[port]);
-      verifySources(args.outputs[port], new Set(run.documentVersionIds));
-    }
     const manifest = await ctx.db
       .query('contextManifests')
       .withIndex('by_attempt', (q) => q.eq('attemptId', attempt._id))
       .unique();
     if (!manifest) throw new Error('Context missing');
+    const seesDocuments = Object.values(agent.inputs).some(
+      (p) => p.delivery === 'attachments',
+    );
+    for (const [port, contract] of Object.entries(agent.outputs)) {
+      validatePayload(contract.schema, args.outputs[port]);
+      assertRunDocuments(args.outputs[port], run.documentVersionIds);
+      if (!seesDocuments)
+        assertEvidenceFromInputs(args.outputs[port], manifest.inputs);
+    }
     const outputs: Record<string, Id<'artifacts'>> = {};
     for (const [port, contract] of Object.entries(agent.outputs))
       outputs[port] = await ctx.db.insert('artifacts', {

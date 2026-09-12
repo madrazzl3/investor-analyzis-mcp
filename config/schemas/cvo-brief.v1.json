@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "cvo-brief@1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contextBrief",
+    "delegatedAgents",
+    "whyTheseAgents",
+    "dominantRiskType",
+    "confidence"
+  ],
+  "properties": {
+    "contextBrief": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1500
+    },
+    "delegatedAgents": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 4,
+      "items": {
+        "enum": [
+          "market-regulatory-exposure",
+          "competitive-attack-surface",
+          "founder-team-integrity",
+          "traction-authenticity",
+          "business-model-monetisation-ethics",
+          "moat-defensibility-under-attack",
+          "financial-captable-fragility",
+          "product-tech-attack-surface",
+          "trust-safety-reputational-risk",
+          "exit-return-under-downside"
+        ]
+      }
+    },
+    "whyTheseAgents": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 400
+    },
+    "dominantRiskType": {
+      "enum": [
+        "regulatory",
+        "competitive",
+        "founder",
+        "traction",
+        "business-model",
+        "moat",
+        "financial",
+        "tech",
+        "trust-safety",
+        "exit"
+      ]
+    },
+    "confidence": {
+      "enum": ["low", "medium", "high"]
+    }
+  }
+}

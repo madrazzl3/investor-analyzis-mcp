@@ -1,0 +1,34 @@
+{
+  "formatVersion": 1,
+  "id": "traction-authenticity",
+  "version": "1.0.0",
+  "description": "Evaluates whether growth signals are real or gamed.",
+  "promptFile": "prompts/traction-authenticity.v1.md",
+  "modelProfile": "grok-primary@1.0.0",
+  "inputs": {
+    "caseFile": {
+      "schema": "case-file@1.0.0",
+      "delivery": "json"
+    },
+    "brief": {
+      "schema": "cvo-brief@1.0.0",
+      "delivery": "json"
+    }
+  },
+  "outputs": {
+    "assessment": {
+      "schema": "lens-assessment@1.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 60000,
+    "maxOutputTokensPerCall": 12000,
+    "timeoutSeconds": 150
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}

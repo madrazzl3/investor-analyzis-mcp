@@ -6,9 +6,11 @@ TypeScript workspace for an authenticated hosted MCP service that coordinates ev
 
 The workspace now includes Convex Auth browser login, private workspace/case management, PDF/transcript uploads up to 100 MB (100,000,000 bytes) via the website or MCP-coordinated direct HTTP, a tested authenticated MCP transport, and a live Grok analysis workflow for uploaded documents. Convex persists runs, attempts, context manifests, provider usage, and validated artifacts for both the live and the synthetic workflows. The website keeps its curated demo separate from private data.
 
-**Live analysis is implemented but not yet validated against the real provider.** Uploaded documents run a four-step Grok workflow (`grok-4.6`) only when the Convex deployment sets `LIVE_ANALYSIS_ENABLED=true` and `XAI_API_KEY`; it is tested against a simulated xAI endpoint, and no paid call or evidence-quality evaluation has been made. MCP browser authorization now has a WorkOS Standalone Connect backend, explicit account mapping, revocable workspace grants, and token exchange. Provider account setup and the deferred login-page wiring are still needed; `/mcp` fails closed with 503 until configured. Browser password recovery, end-user chat, the companion skill, and named-client verification remain unfinished. See [integration contract](docs/INTEGRATION_CONTRACT.md), [authentication](docs/AUTH_MCP.md), [ingestion](docs/GROK_INGESTION.md), and [web](docs/WEB_INTEGRATION.md).
+**Live analysis is implemented but not yet validated against the real provider.** Uploaded documents run a Grok investor council (`grok-4.6`: intake, a context brief, ten specialist risk lenses in parallel, a Devil's Advocate, and a ranked report) only when the Convex deployment sets `LIVE_ANALYSIS_ENABLED=true` and `XAI_API_KEY`; it is tested against a simulated xAI endpoint, and no paid call or evidence-quality evaluation has been made. MCP browser authorization now has a WorkOS Standalone Connect backend, explicit account mapping, revocable workspace grants, and token exchange. Provider account setup and the deferred login-page wiring are still needed; `/mcp` fails closed with 503 until configured. Browser password recovery, end-user chat, the companion skill, and named-client verification remain unfinished. See [integration contract](docs/INTEGRATION_CONTRACT.md), [authentication](docs/AUTH_MCP.md), [ingestion](docs/GROK_INGESTION.md), and [web](docs/WEB_INTEGRATION.md).
 
 The MCP implementation targets protocol **2026-07-28**, with tested stateless fallback for the three 2025 Streamable HTTP revisions. See the [implementation profile](docs/MCP_SPECIFICATION.md) for supported behavior and remaining provider/client acceptance tests.
+
+The MCP prompt **`review_pitch_deck`** guides the upload-to-report workflow. Clients can discover it with `prompts/list` and retrieve it with `prompts/get` (no arguments); retrieval does not start analysis. Client-specific prompt UI support is not yet verified.
 
 ## Local development
 
@@ -48,7 +50,7 @@ Convex setup requires an account/deployment and may update `.env.local`; preserv
 
 ## Next milestone
 
-Run an authorized paid smoke test of the live workflow on synthetic decks/transcripts, then evaluate extraction and evidence integrity and add per-organization budgets. Configure the MCP OAuth identity bridge before testing ChatGPT, Claude, and Grok. See PLAN.md for chat, report, and skill milestones.
+Run an authorized paid smoke test of the live workflow on synthetic decks/transcripts, then evaluate extraction, evidence integrity, and lens quality, and add per-organization budgets. Configure the MCP OAuth identity bridge before testing ChatGPT, Claude, and Grok. See PLAN.md for chat, report, and skill milestones.
 
 ## Configuration checklist
 
@@ -60,7 +62,7 @@ The website supports Convex Auth sign-in, private workspace/case management, bou
 
 ## Agent configuration milestone
 
-The JSON configuration validator and a local fake-agent runner are implemented in `packages/analysis`. Run `pnpm config:validate` to validate the four-step workflow in `config/`. Run `pnpm exec vitest run tests/analysis` to exercise disk persistence, named input/output wiring, resume, fan-in, retries, cancellation, and invalid-output rejection without credentials or paid requests.
+The JSON configuration validator and a local fake-agent runner are implemented in `packages/analysis`. Run `pnpm config:validate` to validate the workflows in `config/`. Run `pnpm exec vitest run tests/analysis` to exercise disk persistence, named input/output wiring, resume, fan-in, retries, cancellation, and invalid-output rejection without credentials or paid requests.
 
 See [config/README.md](config/README.md) for editing instructions and limitations. The local runner remains a fake-agent test harness and refuses live bundles. Convex runs both the synthetic workflow and the live Grok workflow; production release remains pending. No real documents are processed by the fake agents.
 

@@ -1,0 +1,327 @@
+{
+  "formatVersion": 1,
+  "id": "investor-council",
+  "version": "1.0.0",
+  "inputs": {
+    "documents": {
+      "schema": "source-documents@1.0.0"
+    }
+  },
+  "limits": {
+    "maxParallelSteps": 10,
+    "maxModelCalls": 20
+  },
+  "steps": {
+    "intake": {
+      "agent": "intake-gate@1.0.0",
+      "inputs": {
+        "documents": {
+          "from": "input",
+          "name": "documents"
+        }
+      }
+    },
+    "cvo": {
+      "agent": "chief-venture-officer@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        }
+      }
+    },
+    "market-regulatory-exposure": {
+      "agent": "market-regulatory-exposure@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        }
+      }
+    },
+    "competitive-attack-surface": {
+      "agent": "competitive-attack-surface@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        }
+      }
+    },
+    "founder-team-integrity": {
+      "agent": "founder-team-integrity@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        }
+      }
+    },
+    "traction-authenticity": {
+      "agent": "traction-authenticity@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        }
+      }
+    },
+    "business-model-monetisation-ethics": {
+      "agent": "business-model-monetisation-ethics@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        }
+      }
+    },
+    "moat-defensibility-under-attack": {
+      "agent": "moat-defensibility-under-attack@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        }
+      }
+    },
+    "financial-captable-fragility": {
+      "agent": "financial-captable-fragility@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        }
+      }
+    },
+    "product-tech-attack-surface": {
+      "agent": "product-tech-attack-surface@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        }
+      }
+    },
+    "trust-safety-reputational-risk": {
+      "agent": "trust-safety-reputational-risk@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        }
+      }
+    },
+    "exit-return-under-downside": {
+      "agent": "exit-return-under-downside@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        }
+      }
+    },
+    "devils-advocate": {
+      "agent": "devils-advocate@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        },
+        "market-regulatory-exposure": {
+          "from": "step",
+          "step": "market-regulatory-exposure",
+          "output": "assessment"
+        },
+        "competitive-attack-surface": {
+          "from": "step",
+          "step": "competitive-attack-surface",
+          "output": "assessment"
+        },
+        "founder-team-integrity": {
+          "from": "step",
+          "step": "founder-team-integrity",
+          "output": "assessment"
+        },
+        "traction-authenticity": {
+          "from": "step",
+          "step": "traction-authenticity",
+          "output": "assessment"
+        },
+        "business-model-monetisation-ethics": {
+          "from": "step",
+          "step": "business-model-monetisation-ethics",
+          "output": "assessment"
+        },
+        "moat-defensibility-under-attack": {
+          "from": "step",
+          "step": "moat-defensibility-under-attack",
+          "output": "assessment"
+        },
+        "financial-captable-fragility": {
+          "from": "step",
+          "step": "financial-captable-fragility",
+          "output": "assessment"
+        },
+        "product-tech-attack-surface": {
+          "from": "step",
+          "step": "product-tech-attack-surface",
+          "output": "assessment"
+        },
+        "trust-safety-reputational-risk": {
+          "from": "step",
+          "step": "trust-safety-reputational-risk",
+          "output": "assessment"
+        },
+        "exit-return-under-downside": {
+          "from": "step",
+          "step": "exit-return-under-downside",
+          "output": "assessment"
+        }
+      }
+    },
+    "synthesis": {
+      "agent": "thesis-synthesiser@1.0.0",
+      "inputs": {
+        "caseFile": {
+          "from": "step",
+          "step": "intake",
+          "output": "caseFile"
+        },
+        "brief": {
+          "from": "step",
+          "step": "cvo",
+          "output": "brief"
+        },
+        "market-regulatory-exposure": {
+          "from": "step",
+          "step": "market-regulatory-exposure",
+          "output": "assessment"
+        },
+        "competitive-attack-surface": {
+          "from": "step",
+          "step": "competitive-attack-surface",
+          "output": "assessment"
+        },
+        "founder-team-integrity": {
+          "from": "step",
+          "step": "founder-team-integrity",
+          "output": "assessment"
+        },
+        "traction-authenticity": {
+          "from": "step",
+          "step": "traction-authenticity",
+          "output": "assessment"
+        },
+        "business-model-monetisation-ethics": {
+          "from": "step",
+          "step": "business-model-monetisation-ethics",
+          "output": "assessment"
+        },
+        "moat-defensibility-under-attack": {
+          "from": "step",
+          "step": "moat-defensibility-under-attack",
+          "output": "assessment"
+        },
+        "financial-captable-fragility": {
+          "from": "step",
+          "step": "financial-captable-fragility",
+          "output": "assessment"
+        },
+        "product-tech-attack-surface": {
+          "from": "step",
+          "step": "product-tech-attack-surface",
+          "output": "assessment"
+        },
+        "trust-safety-reputational-risk": {
+          "from": "step",
+          "step": "trust-safety-reputational-risk",
+          "output": "assessment"
+        },
+        "exit-return-under-downside": {
+          "from": "step",
+          "step": "exit-return-under-downside",
+          "output": "assessment"
+        },
+        "devils-advocate": {
+          "from": "step",
+          "step": "devils-advocate",
+          "output": "assessment"
+        }
+      }
+    }
+  },
+  "outputs": {
+    "report": {
+      "from": "step",
+      "step": "synthesis",
+      "output": "report"
+    }
+  }
+}

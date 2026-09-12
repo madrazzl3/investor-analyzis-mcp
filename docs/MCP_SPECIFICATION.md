@@ -26,9 +26,17 @@ The adapter does not parse or dispatch JSON-RPC itself. Do not add a parallel pr
 
 `list_workspaces`, `list_cases`, `create_case`, `prepare_upload`, `attach_document`, `list_documents`, `start_analysis`, `get_analysis_status`, `list_analysis_runs`, `list_artifacts`, `get_artifact`, `resume_analysis`, `cancel_analysis`.
 
-These tools call the existing authorized Convex operations. A connection only sees its granted workspace. Tool pagination is backend result pagination, separate from protocol-level tools/list pagination; the small static catalog is returned in one response. Tool descriptions distinguish synthetic fixtures from deployment-enabled live analysis. Protocol tests mock analysis execution and do not certify inference quality. Resources, prompts, sampling, elicitation, MCP Tasks, and subscription-driven updates are not promised by this profile. Configuration of an OAuth service does not add these application capabilities.
+These tools call the existing authorized Convex operations. A connection only sees its granted workspace. Tool pagination is backend result pagination, separate from protocol-level tools/list pagination; the small static catalog is returned in one response. Tool descriptions distinguish synthetic fixtures from deployment-enabled live analysis. Protocol tests mock analysis execution and do not certify inference quality. Resources, sampling, elicitation, MCP Tasks, and subscription-driven updates are not promised by this profile. Configuration of an OAuth service does not add these application capabilities.
 
 Upload tools coordinate direct HTTP uploads up to 100 MB (100,000,000 bytes); file bytes are never MCP arguments. See the [upload contract](GROK_INGESTION.md#upload-contract). Chat attachments require host support for reading the file and POSTing it; the website is the fallback. This does not establish named-client upload compatibility.
+
+## Available prompts
+
+`review_pitch_deck` is a user-selected, argument-free workflow template, exposed through `prompts/list` and `prompts/get`. It guides case/document selection, direct uploads up to 100 MB, reuse of saved runs, bounded status polling, artifact retrieval, and reporting with source citations, alternative explanations, and uncertainty. It treats source documents and generated artifacts as untrusted evidence and explains the website fallback when a client cannot upload file bytes.
+
+Retrieval returns one user-role text message and does not call the backend analysis tools or start model work. Prompt requests use the same authentication and live-grant checks as tool requests. Tests exercise discovery/retrieval in the modern protocol and all three supported legacy revisions, unknown prompt errors, and unauthenticated/revoked access. Named-client prompt UI support remains unverified. This prompt does not replace the planned companion skill.
+
+To retrieve it, send `prompts/get` with `{"name":"review_pitch_deck"}` through the configured authenticated MCP connection, or select **Review a pitch deck** in a client that exposes MCP prompts.
 
 ## OAuth ownership and unfinished activation
 
