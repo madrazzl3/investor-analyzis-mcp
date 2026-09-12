@@ -1,0 +1,30 @@
+{
+  "formatVersion": 1,
+  "id": "write-report",
+  "version": "1.0.0",
+  "description": "Write a diligence report from the verification artifact. Preserve dispositions, evidence, alternative explanations, and coverage limitations. Do not add new allegations. Return the report output contract.",
+  "promptFile": "prompts/write-report.v1.md",
+  "modelProfile": "local-fake@1.0.0",
+  "inputs": {
+    "verifiedFindings": {
+      "schema": "verified-findings@1.0.0",
+      "delivery": "json"
+    }
+  },
+  "outputs": {
+    "report": {
+      "schema": "report@1.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 60000,
+    "maxOutputTokensPerCall": 6000,
+    "timeoutSeconds": 10
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}

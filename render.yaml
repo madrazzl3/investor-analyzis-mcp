@@ -1,0 +1,24 @@
+# Scaffold only. Worker deployment waits for an implemented job protocol.
+services:
+  - type: web
+    name: investor-mcp
+    runtime: node
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @investor/mcp-server build
+    startCommand: pnpm --filter @investor/mcp-server start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: HOST
+        value: 0.0.0.0
+  - type: web
+    name: investor-web
+    runtime: static
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @investor/web build
+    staticPublishPath: apps/web/dist
+
+    envVars:
+      - key: VITE_CONVEX_URL
+        sync: false
+      - key: VITE_MCP_URL
+        sync: false

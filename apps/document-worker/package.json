@@ -1,0 +1,12 @@
+{
+  "name": "@investor/document-worker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsup src/index.ts --format esm --watch --onSuccess \"node --env-file-if-exists=../../.env.local dist/index.js\"",
+    "build": "tsup src/index.ts --format esm --clean",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {}
+}

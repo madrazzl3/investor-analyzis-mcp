@@ -1,0 +1,8 @@
+{
+  "formatVersion": 1,
+  "id": "grok-primary",
+  "version": "1.0.0",
+  "provider": "xai",
+  "model": "grok-4.6",
+  "maxToolCalls": 10
+}

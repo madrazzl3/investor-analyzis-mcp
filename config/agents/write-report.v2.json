@@ -1,0 +1,30 @@
+{
+  "formatVersion": 1,
+  "id": "write-report",
+  "version": "2.0.0",
+  "description": "Write the investor-facing report from verified findings without adding new allegations.",
+  "promptFile": "prompts/write-report.v2.md",
+  "modelProfile": "grok-primary@1.0.0",
+  "inputs": {
+    "verifiedFindings": {
+      "schema": "verified-findings@2.0.0",
+      "delivery": "json"
+    }
+  },
+  "outputs": {
+    "report": {
+      "schema": "report@2.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 120000,
+    "maxOutputTokensPerCall": 8000,
+    "timeoutSeconds": 180
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "formatVersion": 1,
+  "id": "verify-findings",
+  "version": "2.0.0",
+  "description": "Re-check each candidate finding against the original attached documents and assign a disposition; reject unsupported candidates.",
+  "promptFile": "prompts/verify-findings.v2.md",
+  "modelProfile": "grok-primary@1.0.0",
+  "inputs": {
+    "documents": {
+      "schema": "source-documents@1.0.0",
+      "delivery": "attachments"
+    },
+    "findings": {
+      "schema": "findings@2.0.0",
+      "delivery": "json"
+    }
+  },
+  "outputs": {
+    "verifiedFindings": {
+      "schema": "verified-findings@2.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 120000,
+    "maxOutputTokensPerCall": 16000,
+    "timeoutSeconds": 180
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}

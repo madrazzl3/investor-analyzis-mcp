@@ -1,0 +1,7 @@
+{
+  "formatVersion": 1,
+  "id": "local-fake",
+  "version": "1.0.0",
+  "provider": "fake",
+  "model": "deterministic-v1"
+}

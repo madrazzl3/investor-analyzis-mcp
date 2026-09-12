@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "claims@2.0.0",
+  "type": "array",
+  "maxItems": 40,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "topic", "text", "evidence"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      },
+      "topic": {
+        "enum": [
+          "financial",
+          "customers",
+          "product",
+          "market",
+          "team",
+          "timeline",
+          "legal",
+          "other"
+        ]
+      },
+      "text": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 400
+      },
+      "evidence": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 3,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["documentVersionId", "quote", "page"],
+          "properties": {
+            "documentVersionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "quote": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 400
+            },
+            "page": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

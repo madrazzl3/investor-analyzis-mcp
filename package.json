@@ -1,0 +1,47 @@
+{
+  "name": "investor-analysis",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=22.12.0 <25"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @investor/mcp-server --filter @investor/web dev",
+    "dev:convex": "convex dev",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "pnpm -r --if-present build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "pnpm config:validate && pnpm config:check-generated && pnpm typecheck && pnpm test && pnpm build && pnpm format:check",
+    "setup:check": "node scripts/setup-check.mjs",
+    "setup:convex": "convex dev --once",
+    "config:validate": "node --import tsx packages/analysis/src/cli.ts",
+    "config:generate": "node --import tsx packages/analysis/src/generate-convex.ts",
+    "config:check-generated": "pnpm config:generate --check",
+    "setup:mcp-bridge": "node scripts/setup-mcp-bridge.mjs"
+  },
+  "dependencies": {
+    "@auth/core": "0.41.1",
+    "@convex-dev/auth": "^0.0.95",
+    "@convex-dev/workflow": "0.4.7",
+    "ajv": "^8.17.1",
+    "convex": "1.45.0",
+    "jose": "^6"
+  },
+  "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "convex-test": "0.0.58",
+    "prettier": "^3.6.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.0.0",
+    "vitest": "^3.2.4"
+  }
+}

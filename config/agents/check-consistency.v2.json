@@ -1,0 +1,34 @@
+{
+  "formatVersion": 1,
+  "id": "check-consistency",
+  "version": "2.0.0",
+  "description": "Identify candidate inconsistencies, unsupported claims, and timeline conflicts between extracted claims and the attached documents.",
+  "promptFile": "prompts/check-consistency.v2.md",
+  "modelProfile": "grok-primary@1.0.0",
+  "inputs": {
+    "documents": {
+      "schema": "source-documents@1.0.0",
+      "delivery": "attachments"
+    },
+    "claims": {
+      "schema": "claims@2.0.0",
+      "delivery": "json"
+    }
+  },
+  "outputs": {
+    "findings": {
+      "schema": "findings@2.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 120000,
+    "maxOutputTokensPerCall": 16000,
+    "timeoutSeconds": 180
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}

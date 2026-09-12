@@ -1,0 +1,21 @@
+# Local credentials and environment files
+.env
+.env.*
+!.env.example
+
+# Local credential/key material
+secrets/
+*.pem
+*.key
+
+# Generated development/build outputs
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.DS_Store
+*.log
+.convex/
+
+# Local runner artifacts (synthetic development data only)
+.local-runs/

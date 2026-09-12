@@ -1,0 +1,70 @@
+{
+  "formatVersion": 1,
+  "id": "diligence-live",
+  "version": "1.0.0",
+  "inputs": {
+    "documents": {
+      "schema": "source-documents@1.0.0"
+    }
+  },
+  "limits": {
+    "maxParallelSteps": 3,
+    "maxModelCalls": 8
+  },
+  "steps": {
+    "extract": {
+      "agent": "extract-claims@2.0.0",
+      "inputs": {
+        "documents": {
+          "from": "input",
+          "name": "documents"
+        }
+      }
+    },
+    "consistency": {
+      "agent": "check-consistency@2.0.0",
+      "inputs": {
+        "documents": {
+          "from": "input",
+          "name": "documents"
+        },
+        "claims": {
+          "from": "step",
+          "step": "extract",
+          "output": "claims"
+        }
+      }
+    },
+    "verify": {
+      "agent": "verify-findings@2.0.0",
+      "inputs": {
+        "documents": {
+          "from": "input",
+          "name": "documents"
+        },
+        "findings": {
+          "from": "step",
+          "step": "consistency",
+          "output": "findings"
+        }
+      }
+    },
+    "report": {
+      "agent": "write-report@2.0.0",
+      "inputs": {
+        "verifiedFindings": {
+          "from": "step",
+          "step": "verify",
+          "output": "verifiedFindings"
+        }
+      }
+    }
+  },
+  "outputs": {
+    "report": {
+      "from": "step",
+      "step": "report",
+      "output": "report"
+    }
+  }
+}

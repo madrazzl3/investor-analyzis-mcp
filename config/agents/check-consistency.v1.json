@@ -1,0 +1,34 @@
+{
+  "formatVersion": 1,
+  "id": "check-consistency",
+  "version": "1.0.0",
+  "description": "Compare supplied claims against the original documents. Identify candidate discrepancies while considering dates, definitions, and alternative explanations. Cite supporting excerpts; never infer misconduct from missing evidence. Return the findings output contract.",
+  "promptFile": "prompts/check-consistency.v1.md",
+  "modelProfile": "local-fake@1.0.0",
+  "inputs": {
+    "documents": {
+      "schema": "source-documents@1.0.0",
+      "delivery": "attachments"
+    },
+    "claims": {
+      "schema": "claims@1.0.0",
+      "delivery": "json"
+    }
+  },
+  "outputs": {
+    "findings": {
+      "schema": "findings@1.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 60000,
+    "maxOutputTokensPerCall": 6000,
+    "timeoutSeconds": 10
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}

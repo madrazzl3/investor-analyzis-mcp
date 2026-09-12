@@ -1,0 +1,9 @@
+export declare const schema0: (value: unknown) => boolean;
+export declare const schema1: (value: unknown) => boolean;
+export declare const schema2: (value: unknown) => boolean;
+export declare const schema3: (value: unknown) => boolean;
+export declare const schema4: (value: unknown) => boolean;
+export declare const schema5: (value: unknown) => boolean;
+export declare const schema6: (value: unknown) => boolean;
+export declare const schema7: (value: unknown) => boolean;
+export declare const schema8: (value: unknown) => boolean;

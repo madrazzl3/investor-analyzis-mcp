@@ -1,0 +1,34 @@
+{
+  "formatVersion": 1,
+  "id": "verify-findings",
+  "version": "1.0.0",
+  "description": "Check candidate findings against original evidence. Reject unsupported candidates; keep unresolved questions distinct from verified discrepancies. Include coverage limitations. Return the verifiedFindings output contract.",
+  "promptFile": "prompts/verify-findings.v1.md",
+  "modelProfile": "local-fake@1.0.0",
+  "inputs": {
+    "documents": {
+      "schema": "source-documents@1.0.0",
+      "delivery": "attachments"
+    },
+    "findings": {
+      "schema": "findings@1.0.0",
+      "delivery": "json"
+    }
+  },
+  "outputs": {
+    "verifiedFindings": {
+      "schema": "verified-findings@1.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 60000,
+    "maxOutputTokensPerCall": 6000,
+    "timeoutSeconds": 10
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}

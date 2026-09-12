@@ -1,0 +1,30 @@
+{
+  "formatVersion": 1,
+  "id": "extract-claims",
+  "version": "1.0.0",
+  "description": "Extract explicit company claims from the submitted documents. Preserve source quotes and document version references. Distinguish claims from established facts. Do not invent page numbers or infer exhaustive coverage from retrieval. Return the claims output contract.",
+  "promptFile": "prompts/extract-claims.v1.md",
+  "modelProfile": "local-fake@1.0.0",
+  "inputs": {
+    "documents": {
+      "schema": "source-documents@1.0.0",
+      "delivery": "attachments"
+    }
+  },
+  "outputs": {
+    "claims": {
+      "schema": "claims@1.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 60000,
+    "maxOutputTokensPerCall": 6000,
+    "timeoutSeconds": 10
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}

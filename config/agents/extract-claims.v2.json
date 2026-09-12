@@ -1,0 +1,30 @@
+{
+  "formatVersion": 1,
+  "id": "extract-claims",
+  "version": "2.0.0",
+  "description": "Extract explicit, checkable company claims from the attached pitch decks and transcripts, with verbatim quotes and document references.",
+  "promptFile": "prompts/extract-claims.v2.md",
+  "modelProfile": "grok-primary@1.0.0",
+  "inputs": {
+    "documents": {
+      "schema": "source-documents@1.0.0",
+      "delivery": "attachments"
+    }
+  },
+  "outputs": {
+    "claims": {
+      "schema": "claims@2.0.0"
+    }
+  },
+  "tools": [],
+  "limits": {
+    "maxModelCalls": 2,
+    "maxInputTokens": 120000,
+    "maxOutputTokensPerCall": 16000,
+    "timeoutSeconds": 180
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "on": ["rate_limit", "provider_unavailable"]
+  }
+}
