@@ -1,5 +1,3 @@
-> Default setup is now [local orchestration](LOCAL.md): set `XAI_API_KEY` locally and run `pnpm dev`. The hosted instructions below are legacy and are not required.
-
 # Environment setup
 
 ## Current configuration

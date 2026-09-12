@@ -8,7 +8,7 @@
     "node": ">=22.12.0 <25"
   },
   "scripts": {
-    "dev": "pnpm --filter @investor/mcp-server dev:local",
+    "dev": "pnpm dev:hosted",
     "dev:convex": "convex dev",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -26,7 +26,9 @@
     "demo:enable": "node scripts/demo-env.mjs enable",
     "demo:disable": "node scripts/demo-env.mjs disable",
     "dev:hosted": "pnpm --parallel --filter @investor/mcp-server --filter @investor/web dev",
-    "start:local": "pnpm --filter @investor/mcp-server start:local"
+    "start:local": "pnpm --filter @investor/mcp-server start:local",
+    "dev:local": "pnpm --filter @investor/mcp-server dev:local",
+    "setup:check:local": "node scripts/setup-check.mjs --local"
   },
   "dependencies": {
     "@auth/core": "0.41.1",

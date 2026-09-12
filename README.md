@@ -1,28 +1,28 @@
-# Investor diligence — local Grok orchestration
+# Investor diligence — Convex deployment
 
-Analyze pitch decks and transcripts through a local stdio MCP server. The Node process runs the investor council, calls xAI directly, and saves original source snapshots, workflow configuration, attempts, usage, intermediate artifacts, and reports on disk. No Convex deployment, Render service, OAuth account, or browser login is required.
+Analyze pitch decks and transcripts through a Convex-backed website and authenticated HTTP MCP service. Convex owns source files, versioned evidence, analysis state, and durable workflow orchestration. Backend actions call xAI directly; the website and MCP adapter share case authorization.
 
 Use Node 22.12+ (below 25) and pnpm 10.30.3:
 
 ```sh
 pnpm install --frozen-lockfile
-# Set XAI_API_KEY in your shell or the repository .env.local.
 pnpm setup:check
-pnpm dev
+pnpm setup:convex  # push to the configured development deployment
+pnpm dev           # website and HTTP MCP adapter
 ```
 
-`pnpm dev` starts stdio MCP, so connect it from an MCP client rather than typing into its terminal. For a built server, run `pnpm demo:build` then `pnpm start:local`. See [local setup and MCP configuration](docs/LOCAL.md).
+Run `pnpm dev:convex` separately to watch and deploy backend edits. Configure public `VITE_CONVEX_URL` in the web app's environment; Vite does not load root `.env.local`. See [setup](docs/SETUP.md), [browser authentication](docs/MCP_BROWSER_AUTH.md), and [web integration](docs/WEB_INTEGRATION.md). `pnpm dev:hosted` is an alias for the same website/MCP development path.
 
-The council runs intake → context brief → ten parallel specialist lenses → Devil's Advocate → ranked report. Only intake receives files. Outputs undergo schema and source-reference checks; transcript quotes must occur in the source, and downstream quotes must come from prior inputs. PDF quotations/page accuracy still require human evaluation.
+The council runs intake → context brief → ten parallel specialist lenses → Devil's Advocate → ranked report. Only intake receives files. Outputs retain explicit source references and undergo schema and evidence checks. PDF quotations and page accuracy still require evaluation. Convex stores attempts, usage, immutable source/configuration snapshots, and intermediate artifacts; runs continue independently of the client connection.
 
-Tools: `analyze_files`, `get_report`, `list_analysis_runs`, `get_artifact`, `resume_analysis`, `cancel_analysis`, and `cleanup_provider_files`. Repeated identical files, names, case name, and configuration reuse the existing run. Local input supports PDF/TXT/MD, up to ten files and 20 MiB combined.
+Live analysis requires `XAI_API_KEY` and `LIVE_ANALYSIS_ENABLED=true` on Convex. Tests simulate xAI; paid inference, evidence quality, and named-client compatibility remain unverified. Hosted MCP fails closed until OAuth and the identity bridge are configured; WorkOS account setup and browser callback UI remain outstanding. Browser password recovery and chat are also unfinished.
 
-The local process must remain open during analysis. Results survive restarts; interrupted work resumes explicitly within its original budgets. Data is stored in gitignored `.local-runs/` (override with `LOCAL_DATA_DIR`). Files are uploaded privately to xAI and deletion is attempted after each step. This is a single-user filesystem trust boundary, with no remote service or multi-user authorization.
+`render.yaml` describes website/MCP hosting separately from the Convex deployment. Restoring Convex does not itself publish those services. See [MCP specification](docs/MCP_SPECIFICATION.md) and [workflow details](docs/CONVEX_RUNS.md).
 
-`XAI_MODEL` optionally overrides the configured model and is pinned into each run snapshot. No real provider inference has been verified; automated tests simulate xAI. Model access, paid usage, extraction quality, and client compatibility need live validation.
+The disk-backed runtime remains available through `pnpm dev:local`, `pnpm setup:check:local`, and `pnpm start:local`; see [local setup](docs/LOCAL.md). Existing stdio client configurations still use that local runtime. Local runs are not migrated into Convex automatically.
 
 ```sh
-pnpm check  # configuration, types, tests, all builds, formatting
+pnpm check  # configuration, types, tests, builds, formatting
 ```
 
-The old hosted website, HTTP MCP adapter, Convex backend, and their dependencies/tests remain as legacy code; they are not used by local stdio. `pnpm dev:hosted` explicitly starts the old services. Existing cloud data is not migrated and deployed services are not shut down by this change. See [plan](PLAN.md) and [hosted history](docs/README_HOSTED_HISTORY.md).
+See [plan](PLAN.md). The [earlier hosted implementation record](docs/PLAN_HOSTED_HISTORY.md) preserves detailed milestones and historical verification results.

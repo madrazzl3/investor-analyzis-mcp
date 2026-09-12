@@ -2,7 +2,7 @@
 
 ## Scope and architecture
 
-Read PLAN.md and README.md before making architectural changes. Use TypeScript and pnpm. The local process owns disk-backed state and orchestration and calls xAI directly using local environment credentials. Convex and Render code is legacy. Keep evidence and artifacts versioned with explicit source references.
+Read PLAN.md and README.md before making architectural changes. Use TypeScript and pnpm. Convex owns application state, evidence storage, and durable orchestration, with xAI called from backend actions. The website and authenticated HTTP MCP adapter use Convex; the disk-backed local stdio runtime remains an optional alternative. Keep evidence and artifacts versioned with explicit source references.
 
 ## Development
 
@@ -24,7 +24,7 @@ Keep README.md and PLAN.md accurate when behavior changes. Do not claim deployme
 
 <!-- convex-ai-start -->
 
-The legacy hosted backend uses [Convex](https://convex.dev).
+The hosted backend uses [Convex](https://convex.dev).
 
 When working on Convex code, **always read
 `convex/_generated/ai/guidelines.md` first** for important guidelines on
