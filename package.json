@@ -8,7 +8,7 @@
     "node": ">=22.12.0 <25"
   },
   "scripts": {
-    "dev": "pnpm --parallel --filter @investor/mcp-server --filter @investor/web dev",
+    "dev": "pnpm --filter @investor/mcp-server dev:local",
     "dev:convex": "convex dev",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -21,7 +21,12 @@
     "config:validate": "node --import tsx packages/analysis/src/cli.ts",
     "config:generate": "node --import tsx packages/analysis/src/generate-convex.ts",
     "config:check-generated": "pnpm config:generate --check",
-    "setup:mcp-bridge": "node scripts/setup-mcp-bridge.mjs"
+    "setup:mcp-bridge": "node scripts/setup-mcp-bridge.mjs",
+    "demo:build": "pnpm --filter @investor/mcp-server build",
+    "demo:enable": "node scripts/demo-env.mjs enable",
+    "demo:disable": "node scripts/demo-env.mjs disable",
+    "dev:hosted": "pnpm --parallel --filter @investor/mcp-server --filter @investor/web dev",
+    "start:local": "pnpm --filter @investor/mcp-server start:local"
   },
   "dependencies": {
     "@auth/core": "0.41.1",

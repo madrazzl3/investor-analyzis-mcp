@@ -1,5 +1,5 @@
 import { mutation, query } from './_generated/server';
-import { requireIdentity } from './identity';
+import { DEMO_IDENTITY, requireIdentity } from './identity';
 import { ConvexError } from 'convex/values';
 
 export const list = query({
@@ -37,7 +37,10 @@ export const createPersonal = mutation({
       .first();
     if (existing) return existing.organizationId;
     const organizationId = await ctx.db.insert('organizations', {
-      name: 'My workspace',
+      name:
+        actor.issuer === DEMO_IDENTITY.issuer
+          ? 'Demo workspace'
+          : 'My workspace',
     });
     await ctx.db.insert('memberships', {
       organizationId,

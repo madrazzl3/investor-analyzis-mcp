@@ -1,3 +1,5 @@
+> Default setup is now [local orchestration](LOCAL.md): set `XAI_API_KEY` locally and run `pnpm dev`. The hosted instructions below are legacy and are not required.
+
 # Environment setup
 
 ## Current configuration
@@ -35,7 +37,7 @@ The Blueprint builds the website and MCP adapter; external MCP identity configur
 
 ## Model providers
 
-No model key is needed for the synthetic workflow. Live analysis of uploaded documents needs `XAI_API_KEY` and `LIVE_ANALYSIS_ENABLED=true` set on the Convex deployment (`pnpm exec convex env set …`); leave the flag unset to keep paid calls off. See [GROK_INGESTION.md](GROK_INGESTION.md). Keep optional provider keys blank until used. Never expose model or service secrets via Vite variables or the companion skill.
+No model key is needed for the synthetic workflow. Live analysis of uploaded documents needs `XAI_API_KEY` and `LIVE_ANALYSIS_ENABLED=true` set on the Convex deployment (`pnpm exec convex env set …`); leave the flag unset to keep paid calls off. See [GROK_INGESTION.md](GROK_INGESTION.md). For a local no-sign-in demo, `pnpm demo:enable` sets these plus `DEMO_OPEN_ACCESS` on the dev deployment; see [DEMO.md](DEMO.md). Keep optional provider keys blank until used. Never expose model or service secrets via Vite variables or the companion skill.
 
 ## References
 

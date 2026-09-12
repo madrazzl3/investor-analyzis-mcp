@@ -20,6 +20,7 @@ export type SourceFile = {
   blob: Blob;
 };
 export type GrokRequest = {
+  signal?: AbortSignal;
   model: string;
   prompt: string;
   inputs: Record<string, unknown>;
@@ -104,7 +105,9 @@ export class GrokClient {
       response = await this.fetcher(`https://api.x.ai/v1/${path}`, {
         ...init,
         headers: { ...init.headers, Authorization: `Bearer ${this.apiKey}` },
-        signal: timeoutSignal(timeoutMs),
+        signal: init.signal
+          ? AbortSignal.any([init.signal, timeoutSignal(timeoutMs)])
+          : timeoutSignal(timeoutMs),
         redirect: 'error',
       });
     } catch {
@@ -123,7 +126,11 @@ export class GrokClient {
     return response;
   }
 
-  async upload(source: SourceFile, timeoutMs: number): Promise<string> {
+  async upload(
+    source: SourceFile,
+    timeoutMs: number,
+    signal?: AbortSignal,
+  ): Promise<string> {
     const body = new FormData();
     body.append(
       'file',
@@ -133,7 +140,7 @@ export class GrokClient {
     body.append('purpose', 'assistants');
     const response = await this.request(
       'files',
-      { method: 'POST', body },
+      { method: 'POST', body, signal },
       timeoutMs,
     );
     const data = await readJson(response);
@@ -168,6 +175,7 @@ export class GrokClient {
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: request.signal,
         body: JSON.stringify({
           model: request.model,
           store: false,
@@ -255,7 +263,7 @@ export async function runWithPrivateFiles(
   const ids: string[] = [];
   try {
     for (const source of request.files) {
-      const id = await client.upload(source, request.timeoutMs);
+      const id = await client.upload(source, request.timeoutMs, request.signal);
       ids.push(id);
       await lifecycle.uploaded(source, id);
     }

@@ -10,13 +10,14 @@ export type Backend = (
   name: string,
   args: Record<string, unknown>,
 ) => Promise<unknown>;
+/** Without a token, calls are anonymous (accepted only by demo deployments). */
 export function convexBackend(
   url: string,
-  token: () => Promise<string>,
+  token?: () => Promise<string>,
 ): Backend {
   return async (kind, name, args) => {
     const client = new ConvexHttpClient(url);
-    client.setAuth(await token());
+    if (token) client.setAuth(await token());
     return kind === 'query'
       ? client.query(makeFunctionReference<'query'>(name), args)
       : kind === 'action'
@@ -24,13 +25,38 @@ export function convexBackend(
         : client.mutation(makeFunctionReference<'mutation'>(name), args);
   };
 }
-export function createMcpServer(backend: Backend): McpServer {
+export const INSTRUCTIONS =
+  'Investor diligence over pitch decks and transcripts. To upload a PDF or UTF-8 transcript up to 100 MB, call prepare_upload, POST raw file bytes to its uploadUrl using the exact returned headers, then call attach_document with the uploadId and returned storageId. Never put file bytes in MCP arguments or expose upload URLs in reports. If the host cannot send file bytes over HTTP, use the website; chat attachments are not automatically accessible. Use list_documents to choose inputs. A run over uploaded documents is a live Grok investor council (when the deployment enables it): intake, a context brief, ten specialist risk lenses, a Devil’s Advocate, and a ranked report; it takes several minutes. A run over synthetic fixtures is a labeled test and never real diligence. Reuse requestId when retrying a start. Check list_analysis_runs before starting another run, and poll get_analysis_status at a modest interval. The live report ranks up to six candidate risks by VRSD score with evidence quotes, alternative explanations, founder questions, evidence to request, and coverage limits; each specialist assessment is a separate artifact named by its step. Synthetic test findings carry a disposition (verified, unresolved, rejected). Present findings as risks to investigate, never as proven misconduct, and never as an invest or pass recommendation.';
+const GENERIC_FAILURE =
+  'Operation failed or access denied. No successful result is available.';
+/** Wraps a tool body; hosted mode never reveals backend error details. */
+export async function toolResult(
+  run: () => Promise<unknown>,
+  describeError: (error: unknown) => string = () => GENERIC_FAILURE,
+) {
+  try {
+    const output = { data: (await run()) ?? null };
+    return {
+      content: [{ type: 'text' as const, text: JSON.stringify(output) }],
+      structuredContent: output,
+    };
+  } catch (error) {
+    return {
+      isError: true,
+      content: [{ type: 'text' as const, text: describeError(error) }],
+    };
+  }
+}
+export function createMcpServer(
+  backend: Backend,
+  options: {
+    instructions?: string;
+    describeError?: (error: unknown) => string;
+  } = {},
+): McpServer {
   const server = new McpServer(
     { name: serviceInfo.name, version: serviceInfo.version },
-    {
-      instructions:
-        'Investor diligence over pitch decks and transcripts. To upload a PDF or UTF-8 transcript up to 100 MB, call prepare_upload, POST raw file bytes to its uploadUrl using the exact returned headers, then call attach_document with the uploadId and returned storageId. Never put file bytes in MCP arguments or expose upload URLs in reports. If the host cannot send file bytes over HTTP, use the website; chat attachments are not automatically accessible. Use list_documents to choose inputs. A run over uploaded documents is a live Grok investor council (when the deployment enables it): intake, a context brief, ten specialist risk lenses, a Devil’s Advocate, and a ranked report; it takes several minutes. A run over synthetic fixtures is a labeled test and never real diligence. Reuse requestId when retrying a start. Check list_analysis_runs before starting another run, and poll get_analysis_status at a modest interval. The live report ranks up to six candidate risks by VRSD score with evidence quotes, alternative explanations, founder questions, evidence to request, and coverage limits; each specialist assessment is a separate artifact named by its step. Synthetic test findings carry a disposition (verified, unresolved, rejected). Present findings as risks to investigate, never as proven misconduct, and never as an invest or pass recommendation.',
-    },
+    { instructions: options.instructions ?? INSTRUCTIONS },
   );
   registerDiligencePrompts(server);
   const id = z.string().min(1).max(128);
@@ -66,26 +92,8 @@ export function createMcpServer(backend: Backend): McpServer {
           openWorldHint: false,
         },
       },
-      async (args) => {
-        try {
-          const data = await backend(kind, fn, map(args));
-          const output = { data: data ?? null };
-          return {
-            content: [{ type: 'text' as const, text: JSON.stringify(output) }],
-            structuredContent: output,
-          };
-        } catch {
-          return {
-            isError: true,
-            content: [
-              {
-                type: 'text' as const,
-                text: 'Operation failed or access denied. No successful result is available.',
-              },
-            ],
-          };
-        }
-      },
+      async (args) =>
+        toolResult(() => backend(kind, fn, map(args)), options.describeError),
     );
   };
   register(

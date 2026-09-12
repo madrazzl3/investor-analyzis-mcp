@@ -11,3 +11,7 @@ diligent
 convex/analysis/approved.json
 convex/analysis/validators.js
 convex/analysis/validators.d.ts
+
+# Installed third-party agent skills are maintained by their installer.
+.agents/skills
+.claude/skills

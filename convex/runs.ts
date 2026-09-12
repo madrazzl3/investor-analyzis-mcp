@@ -157,8 +157,7 @@ export const list = query({
 export const getArtifact = query({
   args: { artifactId: v.id('artifacts') },
   handler: async (ctx, args) => {
-    if (!(await ctx.auth.getUserIdentity()))
-      throw new ConvexError('Authentication required');
+    await requireIdentity(ctx);
     const artifact = await ctx.db.get(args.artifactId);
     if (!artifact) throw new ConvexError('Access denied');
     await requireRun(ctx, artifact.runId);

@@ -1,3 +1,5 @@
+> Local Grok execution is now the default. See [local setup](../docs/LOCAL.md). The runner tag `convex-grok-v1` is retained as a snapshot compatibility identifier; it no longer requires Convex. The local runtime executes the council with direct xAI requests, token usage, evidence validation and disk persistence. Hosted notes below are historical.
+
 # Analysis configuration
 
 Run `pnpm config:validate` from the repository root. Validation is also part of `pnpm check`.
@@ -27,7 +29,7 @@ The validator hashes the full loaded bundle including prompts and schemas. The l
 
 Implemented: output schema checks, source-version membership checks, saved context manifests, artifact hashes/lineage, atomic multi-output publication, concurrency limits, attempt/call budgets, timeouts, cancellation, and resume from completed steps. One fake-handler invocation counts as one call. Token limits are validated configuration metadata only; token accounting and provider cost enforcement await the Grok adapter.
 
-An exclusive local file lock prevents concurrent execution of a run. After a process crash, confirm the owner is no longer running before removing a stale `<runId>.json.lock`. The store does not provide cloud durability, encrypted tenant storage, or authenticated APIs. It is not wired to web/MCP and must not be used with investor documents. Scope checks verify the trusted test caller's supplied tenant/case, not an actual logged-in identity. Production persistence/orchestration belongs in Convex.
+An exclusive local file lock prevents concurrent execution of a run. After a process crash, confirm the owner is no longer running before removing a stale `<runId>.json.lock`. The store does not provide cloud durability, encrypted tenant storage, or authenticated APIs. The local stdio MCP now uses this store for investor documents; filesystem access is the single-user trust boundary. Scope checks verify the trusted test caller's supplied tenant/case, not an actual logged-in identity. The hosted Convex implementation is retained as legacy code.
 
 The local runner preserves artifacts from in-flight independent steps when one fails, blocks remaining steps, and marks the run failed. It does not produce a partial final report. Interrupted attempts consume their attempt/call budget; completed steps are not rerun. Live tool execution, provider backoff, arbitrary transforms, loops, dynamic spawning, and cross-run reuse are not implemented.
 
@@ -35,4 +37,4 @@ See [the design](../docs/design/AGENT_CONFIG.md) for the target production seman
 
 ## Convex execution
 
-The approved fake bundle can also run through Convex Workflow. Run `pnpm config:generate` after editing configs to regenerate the deployment snapshot and standalone validators; `pnpm check` checks for drift. See [Convex run documentation](../docs/CONVEX_RUNS.md). The local runner limitations above apply to the local adapter; production Grok execution remains unimplemented.
+The approved fake bundle can also run through Convex Workflow. Run `pnpm config:generate` after editing configs to regenerate the deployment snapshot and standalone validators; `pnpm check` checks for drift. See [Convex run documentation](../docs/CONVEX_RUNS.md). The local runner limitations above apply to the local adapter; local Grok execution is implemented in `local-grok.ts`.

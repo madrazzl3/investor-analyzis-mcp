@@ -9,6 +9,7 @@ import {
 } from 'node:fs';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
+import type { GrokResult } from '../../grok/src/index.js';
 import {
   compile,
   hash,
@@ -33,6 +34,7 @@ type Attempt = {
   number: number;
   status: 'running' | 'completed' | 'failed';
   error?: string;
+  provider?: Omit<GrokResult, 'output'>;
 };
 type Manifest = {
   stepId: string;
@@ -64,11 +66,14 @@ const safeId = (id: string) => {
   return id;
 };
 
-// Development/test adapter, not the production datastore or authentication boundary.
+// Single-user local datastore; filesystem access is the authorization boundary.
 // One atomic JSON snapshot per commit. An exclusive lock prevents simultaneous writers.
 // After a process crash, a stale .lock requires manual removal after checking the owner.
 export class LocalRunStore {
-  constructor(readonly directory: string) {
+  constructor(
+    readonly directory: string,
+    readonly allowLive = false,
+  ) {
     mkdirSync(directory, { recursive: true, mode: 0o700 });
   }
   private path(id: string) {
@@ -80,8 +85,8 @@ export class LocalRunStore {
     bundle: Bundle,
     inputs: Record<string, unknown>,
   ): Run {
-    // Live Grok bundles execute only through the authorized Convex runtime.
-    if (bundle.runnerVersion !== 'local-fake-v1')
+    // Live execution requires an explicit local runtime.
+    if (bundle.runnerVersion !== 'local-fake-v1' && !this.allowLive)
       throw new Error('Local runner supports fake-model bundles only');
     const compiled = compile(bundle);
     checkPorts(inputs, Object.keys(bundle.workflow.inputs));
@@ -168,6 +173,7 @@ export type FakeHandler = (request: {
   agent: Agent;
   prompt: string;
   signal: AbortSignal;
+  recordProvider: (provider: NonNullable<Attempt['provider']>) => void;
 }) => Promise<Record<string, unknown>>;
 export type Handlers = Record<string, FakeHandler>;
 export async function executeLocal(
@@ -186,7 +192,7 @@ export async function executeLocal(
     const compiled = compile(run.snapshot);
     for (const step of Object.values(compiled.workflow.steps))
       if (!Object.hasOwn(handlers, step.agent))
-        throw new Error(`Missing fake handler: ${step.agent}`);
+        throw new Error(`Missing handler: ${step.agent}`);
     run.status = 'running';
     store.commit(run);
     const allowedDocs = new Set<string>();
@@ -281,6 +287,10 @@ export async function executeLocal(
               agent: structuredClone(agent),
               prompt: run.snapshot.prompts[agent.promptFile]!,
               signal: controller.signal,
+              recordProvider: (provider) => {
+                attempt.provider = provider;
+                store.commit(run);
+              },
             }),
             new Promise<never>((_, reject) => {
               abortHandler = () => reject(new Error('cancelled'));
